@@ -25,167 +25,161 @@ namespace c4_model_design
             Model model = workspace.Model;
 
             // 1. Diagrama de Contexto
-            SoftwareSystem monitoringSystem = model.AddSoftwareSystem("Monitoreo del Traslado Aéreo de Vacunas SARS-CoV-2", "Permite el seguimiento y monitoreo del traslado aéreo a nuestro país de las vacunas para la COVID-19.");
-            SoftwareSystem googleMaps = model.AddSoftwareSystem("Google Maps", "Plataforma que ofrece una REST API de información geo referencial.");
-            SoftwareSystem aircraftSystem = model.AddSoftwareSystem("Aircraft System", "Permite transmitir información en tiempo real por el avión del vuelo a nuestro sistema");
+          SoftwareSystem technogymEcosystem = model.AddSoftwareSystem("Technogym Unified Ecosystem", "Una plataforma digital abierta para personalizar experiencias de entrenamiento y potenciar el negocio de los clubes.");
+ SoftwareSystem stripe = model.AddSoftwareSystem("Stripe", "Una plataforma de pagos online que permite procesar tarjetas de crédito y débito.");
+ SoftwareSystem googleCloud = model.AddSoftwareSystem("Google Cloud", "Una plataforma de servicios en la nube que ofrece soluciones de computación, almacenamiento, bases de datos, inteligencia artificial y más.");
 
-            Person ciudadano = model.AddPerson("Ciudadano", "Ciudadano peruano.");
-            Person admin = model.AddPerson("Admin", "User Admin.");
+ Person endUser = model.AddPerson("End user", "Una persona que usa los equipos y servicios de Technogym para mejorar su bienestar.");
+ Person businessCustomer = model.AddPerson("Business customer", "Una organización o centro deportivo que ofrece equipos y servicios de Technogym a sus miembros o clientes.");
+ Person fitnessClub = model.AddPerson("Fitness club", "Un club o gimnasio que ofrece equipos y servicios de Technogym a sus miembros o clientes.");
+ Person supplier = model.AddPerson("Supplier", "Una empresa que suministra productos o servicios a Technogym.");
+ Person maintenanceTechnician = model.AddPerson("Maintenance technician", "Una persona que se encarga de reparar y mantener los equipos de Technogym.");
 
-            ciudadano.Uses(monitoringSystem, "Realiza consultas para mantenerse al tanto de la planificación de los vuelos hasta la llegada del lote de vacunas al Perú");
-            admin.Uses(monitoringSystem, "Realiza consultas para mantenerse al tanto de la planificación de los vuelos hasta la llegada del lote de vacunas al Perú");
+ endUser.Uses(technogymEcosystem, "Accede a programas y contenidos personalizados de entrenamiento desde cualquier lugar y en cualquier momento.");
+ businessCustomer.Uses(technogymEcosystem, "Se conecta con sus clientes usando sistemas web o móviles, dentro o fuera del club.");
+ fitnessClub.Uses(technogymEcosystem, "Se conecta con sus miembros usando sistemas web o móviles, dentro o fuera del club.");
+ supplier.Uses(technogymEcosystem, "Suministra productos o servicios a Technogym.");
+ maintenanceTechnician.Uses(technogymEcosystem, "Repara y mantiene los equipos de Technogym.");
 
-            monitoringSystem.Uses(aircraftSystem, "Consulta información en tiempo real por el avión del vuelo");
-            monitoringSystem.Uses(googleMaps, "Usa la API de google maps");
+ technogymEcosystem.Uses(stripe, "Usa la plataforma de pagos para procesar las transacciones online.");
+ technogymEcosystem.Uses(googleCloud, "Usa la plataforma de servicios en la nube para alojar y ejecutar sus soluciones.");
+ 
+ // Tags
+ endUser.AddTags("EndUser");
+ businessCustomer.AddTags("BusinessCustomer");
+ fitnessClub.AddTags("FitnessClub");
+ supplier.AddTags("Supplier");
+ maintenanceTechnician.AddTags("MaintenanceTechnician");
+ technogymEcosystem.AddTags("TechnogymEcosystem");
+ stripe.AddTags("Stripe");
+ googleCloud.AddTags("GoogleCloud");
 
-            // Tags
-            ciudadano.AddTags("Ciudadano");
-            admin.AddTags("Admin");
-            monitoringSystem.AddTags("SistemaMonitoreo");
-            googleMaps.AddTags("GoogleMaps");
-            aircraftSystem.AddTags("AircraftSystem");
+ Styles styles = viewSet.Configuration.Styles;
+ styles.Add(new ElementStyle("EndUser") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
+ styles.Add(new ElementStyle("BusinessCustomer") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Person });
+ styles.Add(new ElementStyle("FitnessClub") { Background = "#0aaf60", Color = "#ffffff", Shape = Shape.Person });
+ styles.Add(new ElementStyle("Supplier") { Background = "#af600a", Color = "#ffffff", Shape = Shape.Person });
+ styles.Add(new ElementStyle("MaintenanceTechnician") { Background = "#af0a60", Color = "#ffffff", Shape = Shape.Person });
+ styles.Add(new ElementStyle("TechnogymEcosystem") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
+ styles.Add(new ElementStyle("Stripe") { Background = "#90714c", Color = "#ffffff", Shape = Shape.RoundedBox });
+ styles.Add(new ElementStyle("GoogleCloud") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
+ SystemContextView contextView = viewSet.CreateSystemContextView(technogymEcosystem, "Contexto", "Diagrama de contexto");
+ contextView.PaperSize = PaperSize.A4_Landscape;
+ contextView.AddAllSoftwareSystems();
+ contextView.AddAllPeople();
+ 
+ // 2. Diagrama de Contenedor
+Container webApp = technogymEcosystem.AddContainer("Web Application", "Permite a los usuarios acceder a los servicios y productos de Technogym.", "Angular");
+ Container mobileApp = technogymEcosystem.AddContainer("Mobile Application", "Permite a los usuarios acceder a los servicios y productos de Technogym desde sus dispositivos móviles.", "Android/iOS");
+ Container apiGateway = technogymEcosystem.AddContainer("API Gateway", "Proporciona un punto de entrada único para todas las peticiones .", "Google Cloud Run");
+ Container sharedContext = technogymEcosystem.AddContainer("Shared Context", "Bounded Context del  Compartido que proporciona funcionalidades comunes.", "Google Cloud Run");
+ Container identityContext = technogymEcosystem.AddContainer("Identity Context", "Bounded Context del  de Identidad que gestiona el registro, la autenticación y la autorización de los usuarios.", "Google Cloud Run");
+ Container ecommerceContext = technogymEcosystem.AddContainer("Ecommerce Context", "Bounded Context del  de Comercio Electrónico que gestiona la venta online de productos y suscripciones.", "Google Cloud Run");
+ Container inventoryContext = technogymEcosystem.AddContainer("Inventory Context", "Bounded Context del  de Inventario que gestiona el catálogo, el inventario y las adquisiciones de productos y servicios.", "Google Cloud Run");
+ Container accountsContext = technogymEcosystem.AddContainer("Accounts Context", "Bounded Context del  de Cuentas que gestiona la información de cuentas, perfiles y preferencias de los usuarios.", "Google Cloud Run");
+ Container trainingContext = technogymEcosystem.AddContainer("Training Context", "Bounded Context del  de Entrenamiento que gestiona el diseño, la ejecución y el seguimiento de planes de entrenamiento.", "Google Cloud Run");
+ Container businessContext = technogymEcosystem.AddContainer("Business Context", "Bounded Context del  de Negocio que gestiona los servicios premium para smart facilities.", "Google Cloud Run");
+ Container contentContext = technogymEcosystem.AddContainer("Content Context", "Bounded Context del  de Contenido que gestiona el contenido multimedia de entrenamiento y capacitación.", "Google Cloud Run");
+ Container aiCoachContext = technogymEcosystem.AddContainer("AI Coach Context", "Bounded Context del  de Entrenador Inteligente que proporciona asistencia inteligente en las sesiones de entrenamiento.", "Google Cloud Run");
+ Container analyticsContext = technogymEcosystem.AddContainer("Analytics Context", "Bounded Context del  de Análisis que gestiona el registro y análisis de datos de actividades en la plataforma.", "Google Cloud Run");
+ Container database = technogymEcosystem.AddContainer("Database", "Almacena información persistente sobre usuarios, productos, servicios, etc.", "Google Cloud SQL");
+ Container messageBus = technogymEcosystem.AddContainer("Message Bus", "Facilita la comunicación asíncrona  mediante eventos.", "Google Pub/Sub");
+ Container fileStorage = technogymEcosystem.AddContainer("File Storage", "Almacena archivos multimedia como imágenes, videos, etc.", "Google Cloud Storage");
+ Container videoStreaming = technogymEcosystem.AddContainer("Video Streaming", "Permite transmitir videos en vivo o bajo demanda a los usuarios.", "Google Cloud CDN");
+ 
+ webApp.Uses(apiGateway, "Llama a");
+ mobileApp.Uses(apiGateway, "Llama a");
+apiGateway.Uses(sharedContext, "Llama a");
+apiGateway.Uses(identityContext, "Llama a");
+apiGateway.Uses(ecommerceContext, "Llama a");
+apiGateway.Uses(inventoryContext, "Llama a");
+apiGateway.Uses(accountsContext, "Llama a");
+apiGateway.Uses(trainingContext, "Llama a");
+apiGateway.Uses(businessContext, "Llama a");
+apiGateway.Uses(contentContext, "Llama a");
+apiGateway.Uses(aiCoachContext, "Llama a");
+apiGateway.Uses(analyticsContext, "Llama a");
 
-            Styles styles = viewSet.Configuration.Styles;
-            styles.Add(new ElementStyle("Ciudadano") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
-            styles.Add(new ElementStyle("Admin") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Person });
-            styles.Add(new ElementStyle("SistemaMonitoreo") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
-            styles.Add(new ElementStyle("GoogleMaps") { Background = "#90714c", Color = "#ffffff", Shape = Shape.RoundedBox });
-            styles.Add(new ElementStyle("AircraftSystem") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
+sharedContext.Uses(database, "Consulta", "JDBC");
+identityContext.Uses(database, "Consulta", "JDBC");
+ecommerceContext.Uses(database, "Consulta", "JDBC");
+inventoryContext.Uses(database, "Consulta", "JDBC");
+accountsContext.Uses(database, "Consulta", "JDBC");
+trainingContext.Uses(database, "Consulta", "JDBC");
+businessContext.Uses(database, "Consulta", "JDBC");
+contentContext.Uses(database, "Consulta", "JDBC");
+aiCoachContext.Uses(database, "Consulta", "JDBC");
+analyticsContext.Uses(database, "Consulta", "JDBC");
+
+sharedContext.Uses(messageBus, "Publica eventos");
+identityContext.Uses(messageBus, "Publica eventos");
+ecommerceContext.Uses(messageBus, "Publica eventos");
+inventoryContext.Uses(messageBus, "Publica eventos");
+accountsContext.Uses(messageBus, "Publica eventos");
+trainingContext.Uses(messageBus, "Publica eventos");
+businessContext.Uses(messageBus, "Publica eventos");
+contentContext.Uses(messageBus, "Publica eventos");
+aiCoachContext.Uses(messageBus, "Publica eventos");
+analyticsContext.Uses(messageBus, "Publica eventos");
+
+sharedContext.Uses(messageBus, "Se suscribe a eventos");
+identityContext.Uses(messageBus, "Se suscribe a eventos");
+ecommerceContext.Uses(messageBus, "Se suscribe a eventos");
+inventoryContext.Uses(messageBus, "Se suscribe a eventos");
+accountsContext.Uses(messageBus, "Se suscribe a eventos");
+trainingContext.Uses(messageBus, "Se suscribe a eventos");
+businessContext.Uses(messageBus, "Se suscribe a eventos");
+contentContext.Uses(messageBus, "Se suscribe a eventos");
+aiCoachContext.Uses(messageBus, "Se suscribe a eventos");
+analyticsContext.Uses(messageBus, "Se suscribe a eventos");
+
+contentContext.Uses(fileStorage, "Almacena y recupera archivos multimedia", "");
+contentContext.Uses(videoStreaming, "", "");
+ecommerceContext.Uses(stripe,"Usa la plataforma de pagos para procesar las transacciones online.", "");
+
+ 
+ ContainerView containerView = viewSet.CreateContainerView(technogymEcosystem, "Contenedor", "Diagrama de contenedores");
+ contextView.PaperSize = PaperSize.A4_Landscape;
+ containerView.AddAllElements();
+ 
+ // Tags
+webApp.AddTags("WebApp"); 
+mobileApp.AddTags("MobileApp"); 
+apiGateway.AddTags("ApiGateway"); 
+sharedContext.AddTags("SharedContext"); 
+identityContext.AddTags("IdentityContext"); 
+ecommerceContext.AddTags("EcommerceContext"); 
+inventoryContext.AddTags("InventoryContext"); 
+accountsContext.AddTags("AccountsContext"); 
+trainingContext.AddTags("TrainingContext"); 
+businessContext.AddTags("BusinessContext"); 
+contentContext.AddTags("ContentContext"); 
+aiCoachContext.AddTags("AiCoachContext"); 
+analyticsContext.AddTags("AnalyticsContext"); 
+database.AddTags("Database"); 
+messageBus.AddTags("MessageBus"); 
+fileStorage.AddTags("FileStorage"); 
+videoStreaming.AddTags("VideoStreaming");
+
+styles.Add(new ElementStyle("WebApp") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Box });
+styles.Add(new ElementStyle("MobileApp") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Box });
+styles.Add(new ElementStyle("ApiGateway") { Background = "#0aaf60", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("SharedContext") { Background = "#af600a", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("IdentityContext") { Background = "#af0a60", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("EcommerceContext") { Background = "#008f39", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("InventoryContext") { Background = "#90714c", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("AccountsContext") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("TrainingContext") { Background = "#95c72f", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("BusinessContext") { Background = "#c7952f", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("ContentContext") { Background = "#c72f95", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("AiCoachContext") { Background = "#2fc795", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("AnalyticsContext") { Background = "#2f2fc7", Color = "#ffffff", Shape = Shape.Hexagon });
+styles.Add(new ElementStyle("Database") { Background = "#c7c72f", Color = "#ffffff", Shape = Shape.Cylinder });
+styles.Add(new ElementStyle("MessageBus") { Background = "#c7c7c7", Color = "#000000", Shape = Shape.Pipe });
+styles.Add(new ElementStyle("FileStorage") { Background = "#000000", Color = "#ffffff", Shape = Shape.Folder });
             
-            SystemContextView contextView = viewSet.CreateSystemContextView(monitoringSystem, "Contexto", "Diagrama de contexto");
-            contextView.PaperSize = PaperSize.A4_Landscape;
-            contextView.AddAllSoftwareSystems();
-            contextView.AddAllPeople();
-
-            // 2. Diagrama de Contenedores
-            Container mobileApplication = monitoringSystem.AddContainer("Mobile App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "Swift UI");
-            Container webApplication = monitoringSystem.AddContainer("Web App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "React");
-            Container landingPage = monitoringSystem.AddContainer("Landing Page", "", "React");
-            Container apiRest = monitoringSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
-
-            Container flightPlanningContext = monitoringSystem.AddContainer("Flight Planning Context", "Bounded Context de Planificación de Vuelos", "NodeJS (NestJS)");
-            Container airportContext = monitoringSystem.AddContainer("Airport Context", "Bounded Context de información de Aeropuertos", "NodeJS (NestJS)");
-            Container aircraftInventoryContext = monitoringSystem.AddContainer("Aircraft Inventory Context", "Bounded Context de Inventario de Aviones", "NodeJS (NestJS)");
-            Container vaccinesInventoryContext = monitoringSystem.AddContainer("Vaccines Inventory Context", "Bounded Context de Inventario de Vacunas", "NodeJS (NestJS)");
-            Container monitoringContext = monitoringSystem.AddContainer("Monitoring Context", "Bounded Context de Monitoreo en tiempo real del status y ubicación del vuelo que transporta las vacunas", "NodeJS (NestJS)");
-            Container securityContext = monitoringSystem.AddContainer("Security Context", "Bounded Context de Seguridad", "NodeJS (NestJS)");
-
-            Container database = monitoringSystem.AddContainer("Database", "", "Oracle");
+         
             
-            ciudadano.Uses(mobileApplication, "Consulta");
-            ciudadano.Uses(webApplication, "Consulta");
-            ciudadano.Uses(landingPage, "Consulta");
-
-            admin.Uses(mobileApplication, "Consulta");
-            admin.Uses(webApplication, "Consulta");
-            admin.Uses(landingPage, "Consulta");
-
-            mobileApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
-            webApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
-
-            apiRest.Uses(flightPlanningContext, "", "");
-            apiRest.Uses(airportContext, "", "");
-            apiRest.Uses(aircraftInventoryContext, "", "");
-            apiRest.Uses(vaccinesInventoryContext, "", "");
-            apiRest.Uses(monitoringContext, "", "");
-            apiRest.Uses(securityContext, "", "");
-
-            flightPlanningContext.Uses(database, "", "");
-            airportContext.Uses(database, "", "");
-            aircraftInventoryContext.Uses(database, "", "");
-            vaccinesInventoryContext.Uses(database, "", "");
-            monitoringContext.Uses(database, "", "");
-            securityContext.Uses(database, "", "");
-
-            monitoringContext.Uses(googleMaps, "API Request", "JSON/HTTPS");
-            monitoringContext.Uses(aircraftSystem, "API Request", "JSON/HTTPS");
-
-            // Tags
-            mobileApplication.AddTags("MobileApp");
-            webApplication.AddTags("WebApp");
-            landingPage.AddTags("LandingPage");
-            apiRest.AddTags("APIRest");
-            database.AddTags("Database");
-
-            string contextTag = "Context";
-
-            flightPlanningContext.AddTags(contextTag);
-            airportContext.AddTags(contextTag);
-            aircraftInventoryContext.AddTags(contextTag);
-            vaccinesInventoryContext.AddTags(contextTag);
-            monitoringContext.AddTags(contextTag);
-            securityContext.AddTags(contextTag);
-
-            styles.Add(new ElementStyle("MobileApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.MobileDevicePortrait, Icon = "" });
-            styles.Add(new ElementStyle("WebApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
-            styles.Add(new ElementStyle("LandingPage") { Background = "#929000", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
-            styles.Add(new ElementStyle("APIRest") { Shape = Shape.RoundedBox, Background = "#0000ff", Color = "#ffffff", Icon = "" });
-            styles.Add(new ElementStyle("Database") { Shape = Shape.Cylinder, Background = "#ff0000", Color = "#ffffff", Icon = "" });
-            styles.Add(new ElementStyle(contextTag) { Shape = Shape.Hexagon, Background = "#facc2e", Icon = "" });
-
-            ContainerView containerView = viewSet.CreateContainerView(monitoringSystem, "Contenedor", "Diagrama de contenedores");
-            contextView.PaperSize = PaperSize.A4_Landscape;
-            containerView.AddAllElements();
-
-            // 3. Diagrama de Componentes (Monitoring Context)
-            Component domainLayer = monitoringContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
-
-            Component monitoringController = monitoringContext.AddComponent("MonitoringController", "REST API endpoints de monitoreo.", "NodeJS (NestJS) REST Controller");
-
-            Component monitoringApplicationService = monitoringContext.AddComponent("MonitoringApplicationService", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
-
-            Component flightRepository = monitoringContext.AddComponent("FlightRepository", "Información del vuelo", "NestJS Component");
-            Component vaccineLoteRepository = monitoringContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
-            Component locationRepository = monitoringContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");
-
-            Component aircraftSystemFacade = monitoringContext.AddComponent("Aircraft System Facade", "", "NestJS Component");
-
-            apiRest.Uses(monitoringController, "", "JSON/HTTPS");
-            monitoringController.Uses(monitoringApplicationService, "Invoca métodos de monitoreo");
-
-            monitoringApplicationService.Uses(domainLayer, "Usa", "");
-            monitoringApplicationService.Uses(aircraftSystemFacade, "Usa");
-            monitoringApplicationService.Uses(flightRepository, "", "");
-            monitoringApplicationService.Uses(vaccineLoteRepository, "", "");
-            monitoringApplicationService.Uses(locationRepository, "", "");
-
-            flightRepository.Uses(database, "", "");
-            vaccineLoteRepository.Uses(database, "", "");
-            locationRepository.Uses(database, "", "");
-
-            locationRepository.Uses(googleMaps, "", "JSON/HTTPS");
-
-            aircraftSystemFacade.Uses(aircraftSystem, "JSON/HTTPS");
-            
-            // Tags
-            domainLayer.AddTags("DomainLayer");
-            monitoringController.AddTags("MonitoringController");
-            monitoringApplicationService.AddTags("MonitoringApplicationService");
-            flightRepository.AddTags("FlightRepository");
-            vaccineLoteRepository.AddTags("VaccineLoteRepository");
-            locationRepository.AddTags("LocationRepository");
-            aircraftSystemFacade.AddTags("AircraftSystemFacade");
-            
-            styles.Add(new ElementStyle("DomainLayer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("MonitoringController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("MonitoringApplicationService") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("MonitoringDomainModel") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("FlightStatus") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("FlightRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("VaccineLoteRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("LocationRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("AircraftSystemFacade") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-
-            ComponentView componentView = viewSet.CreateComponentView(monitoringContext, "Components", "Component Diagram");
-            componentView.PaperSize = PaperSize.A4_Landscape;
-            componentView.Add(mobileApplication);
-            componentView.Add(webApplication);
-            componentView.Add(apiRest);
-            componentView.Add(database);
-            componentView.Add(aircraftSystem);
-            componentView.Add(googleMaps);
-            componentView.AddAllComponents();
-
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
         }
